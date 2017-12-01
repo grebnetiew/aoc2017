@@ -20,11 +20,7 @@ func sumRepeatedNumbers(s string) int {
 	prev := s[len(s)-1]
 	for i := 0; i < len(s); i++ {
 		if s[i] == prev {
-			var digit int
-			if _, err := fmt.Sscan(string(prev), &digit); err != nil {
-				log.Fatalf("Error scanning %s, %s\n", s[i], err)
-			}
-			total += digit
+			total += int(s[i] - '0')
 		}
 		prev = s[i]
 	}
@@ -36,11 +32,7 @@ func sumCircularNumbers(s string) int {
 	halfLen := len(s) / 2
 	for i := 0; i < halfLen; i++ {
 		if s[i] == s[i+halfLen] {
-			var digit int
-			if _, err := fmt.Sscan(string(s[i]), &digit); err != nil {
-				log.Fatalf("Error scanning %s, %s\n", s[i], err)
-			}
-			total += digit
+			total += int(s[i] - '0')
 		}
 	}
 	return total * 2
