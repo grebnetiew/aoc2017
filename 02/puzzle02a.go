@@ -14,17 +14,24 @@ func main() {
 
 	sum := 0
 	for _, row := range table {
-		sum += checksum(row);
+		sum += checksum(toNumbers(row));
 	}
 
 	fmt.Println(sum)
 }
 
-func checksum(numbers []string) int {
-	min, _ := strconv.Atoi(numbers[0]);
+func toNumbers(row []string) []int {
+	numbers := make([]int, len(row))
+	for i, s := range row {
+		numbers[i], _ = strconv.Atoi(s);
+	}
+	return numbers
+}
+
+func checksum(numbers []int) int {
+	min := numbers[0];
 	max := min;
-	for _, s := range numbers {
-		n, _ := strconv.Atoi(s);
+	for _, n := range numbers {
 		if n < min {
 			min = n
 		}
