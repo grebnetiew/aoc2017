@@ -19,7 +19,7 @@ For[i = 1, i != target, i++,
                 memory[pos-I]                   + memory[pos+I] + 
                 memory[pos-1-I] + memory[pos-1] + memory[pos-1+I];
   (* If the cell to our left is empty, turn left *)
-  If[NumberQ[memory[pos + direction I]] == 0, direction *= I];
+  If[memory[pos + direction I] == 0, direction *= I];
   pos += direction;
 ];
 i
