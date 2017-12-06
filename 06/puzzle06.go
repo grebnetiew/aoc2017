@@ -1,17 +1,17 @@
 package main
 
 import (
-	"fmt"
 	"encoding/csv"
-	"strconv"
-	"reflect"
+	"fmt"
 	"os"
+	"reflect"
+	"strconv"
 )
 
 func main() {
 	r := csv.NewReader(os.Stdin)
-	r.Comma = '	';
-	table, _ := r.ReadAll();
+	r.Comma = '	'
+	table, _ := r.ReadAll()
 
 	iterations, distance := findLoop(toNumbers(table[0]))
 
@@ -22,14 +22,13 @@ func main() {
 func toNumbers(row []string) []int {
 	numbers := make([]int, len(row))
 	for i, s := range row {
-		numbers[i], _ = strconv.Atoi(s);
+		numbers[i], _ = strconv.Atoi(s)
 	}
 	return numbers
 }
 
 func findLoop(numbers []int) (int, int) {
 	var seenBefore [][]int
-	it := 0
 
 	for {
 		oldNumbers := make([]int, len(numbers))
@@ -37,11 +36,10 @@ func findLoop(numbers []int) (int, int) {
 		seenBefore = append(seenBefore, oldNumbers)
 
 		reorderBanks(numbers)
-		it++
-		
+
 		for i, r := range seenBefore {
 			if reflect.DeepEqual(r, numbers) {
-				return it, (len(seenBefore) - i)
+				return len(seenBefore), (len(seenBefore) - i)
 			}
 
 		}
@@ -49,15 +47,13 @@ func findLoop(numbers []int) (int, int) {
 }
 
 func reorderBanks(numbers []int) {
-	imax := 0;
-	max := numbers[0]
+	var imax, max int = 0, numbers[0]
 	for i, n := range numbers {
 		if n > max {
-			max = n
-			imax = i
+			imax, max = i, n
 		}
 	}
-	numbers[imax] = 0;
+	numbers[imax] = 0
 
 	for ; max > 0; max-- {
 		imax = (imax + 1) % len(numbers)
