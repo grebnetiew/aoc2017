@@ -1,43 +1,41 @@
 package main
 
 import (
+	"encoding/csv"
 	"fmt"
-	"bufio"
 	"os"
-	"strings"
 )
 
 type ProgramList map[string]Program
 type Program struct {
 	Weight int
-	Tower []string
+	Tower  []string
 }
 
 func main() {
-	var err error = nil
+	reader := csv.NewReader(os.Stdin)
+	reader.TrimLeadingSpace = true
+	reader.FieldsPerRecord = -1 // variable # of fields
+
 	programList := make(ProgramList)
-	reader := bufio.NewReader(os.Stdin)
 	var p string
+	row, err := reader.Read()
 	for err == nil {
 		var w int
-		var sp []string
-		var text string
-		text, err = reader.ReadString('\n')
-		if err != nil {
-			break
+		if len(row) == 1 {
+			fmt.Sscanf(row[0], "%s (%d)", &p, &w)
+		} else {
+			fmt.Sscanf(row[0], "%s (%d) -> %s", &p, &w, &row[0])
 		}
-		fmt.Sscanf(text, "%s (%d)", &p, &w)
-		if n := strings.Index(text, "->"); n != -1 {
-			var sps string
-			sps = text[(n + 3):(len(text) - 2)]
-			sp = strings.Split(sps, ", ")
-		}
-		programList[p] = Program{Weight: w, Tower: sp}
+		programList[p] = Program{Weight: w, Tower: row}
+
+		row, err = reader.Read()
 	}
-	
-	root := p
+
 	// Find the root of the tree. This is extremely inefficient :(
-	search: for {
+	root := p
+search:
+	for {
 		for key, val := range programList {
 			for _, name := range val.Tower {
 				if root == name {
@@ -72,15 +70,15 @@ func balance(pl ProgramList, name string) int {
 	if different != 0 {
 		var goodWeight = w[0]
 		// they might've been all different - check for this case
-		if different == len(w) - 1 && w[0] != w[1] {
+		if different == len(w)-1 && w[0] != w[1] {
 			// it was the first one
 			different = 0
 			goodWeight = w[1]
 		}
-		
+
 		difference := w[different] - goodWeight
 		fmt.Println(-difference + pl[p.Tower[different]].Weight)
 	}
 
-	return w[0] * len(w) + p.Weight
+	return w[0]*len(w) + p.Weight
 }
