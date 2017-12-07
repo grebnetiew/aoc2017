@@ -37,27 +37,28 @@ func main() {
 		row, err = reader.Read()
 	}
 
-	// Find the root of the tree. This is extremely inefficient :(
-	// Traverse the tree to find the parent of the 'root' node
-	// Do it until you finish without finding a parent
-	root := p
-search:
-	for {
-		for key, val := range programList {
-			for _, name := range val.Tower {
-				if root == name {
-					root = key
-					continue search
-				}
-			}
-		}
-		break search
-	}
-
+	root := findRoot(programList)
 	fmt.Println(root)
 
 	// Find the unbalanced disk
 	balance(programList, root)
+}
+
+func findRoot(pl ProgramList) string {
+	// Now that the map is loaded, make a "reverse" tree
+	parents := make(map[string]string)
+	var key string
+	var val Program
+	for key, val = range pl {
+		for _, name := range val.Tower {
+			parents[name] = key
+		}
+	}
+
+	// Find the root of the tree
+	for ; parents[key] != ""; key = parents[key] {
+	}
+	return key
 }
 
 // This function returns total weight of this node and any subtree
