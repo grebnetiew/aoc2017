@@ -13,18 +13,23 @@ type Program struct {
 }
 
 func main() {
+	// Technically, "abc (12) -> def, ghi, jkl" are comma separated values. Abuse this
 	reader := csv.NewReader(os.Stdin)
 	reader.TrimLeadingSpace = true
 	reader.FieldsPerRecord = -1 // variable # of fields
 
+	// Put everything in our hashmap
 	programList := make(ProgramList)
-	var p string
+	var p string // remember it so we can find a root later
+
 	row, err := reader.Read()
 	for err == nil {
 		var w int
-		if len(row) == 1 {
+		if len(row) == 1 { // a leaf node
 			fmt.Sscanf(row[0], "%s (%d)", &p, &w)
 		} else {
+			// We replace the "abc (12) -> def" part by just "def"
+			// so row is exactly a slice of the children
 			fmt.Sscanf(row[0], "%s (%d) -> %s", &p, &w, &row[0])
 		}
 		programList[p] = Program{Weight: w, Tower: row}
@@ -33,6 +38,8 @@ func main() {
 	}
 
 	// Find the root of the tree. This is extremely inefficient :(
+	// Traverse the tree to find the parent of the 'root' node
+	// Do it until you finish without finding a parent
 	root := p
 search:
 	for {
@@ -53,12 +60,15 @@ search:
 	balance(programList, root)
 }
 
-// returns total weight
+// This function returns total weight of this node and any subtree
+// and prints the weight difference if a set of children is not balanced
 func balance(pl ProgramList, name string) int {
 	p := pl[name]
-	if p.Tower == nil {
+	if p.Tower == nil { // no subtree
 		return p.Weight
 	}
+
+	// Keep a list of the subtree weights, and try to keep track of the odd one out
 	w := make([]int, len(p.Tower))
 	different := 0
 	for i, sp := range p.Tower {
@@ -67,15 +77,21 @@ func balance(pl ProgramList, name string) int {
 			different = i
 		}
 	}
+
+	// If the odd one out is still 0, they are all the same
 	if different != 0 {
+		// If not, make sure we found the odd one out
+		// (if it's the 0th one, all the others will be "different"..)
+		// check for this. Also keep track of the others' weight
 		var goodWeight = w[0]
-		// they might've been all different - check for this case
 		if different == len(w)-1 && w[0] != w[1] {
 			// it was the first one
 			different = 0
 			goodWeight = w[1]
 		}
 
+		// Find the difference, and subtract it from the offending node's
+		// personal weight to see what it should weigh
 		difference := w[different] - goodWeight
 		fmt.Println(-difference + pl[p.Tower[different]].Weight)
 	}
