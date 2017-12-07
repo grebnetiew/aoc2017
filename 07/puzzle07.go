@@ -71,13 +71,16 @@ func balance(pl ProgramList, name string) int {
 	// Keep a list of the subtree weights, and try to keep track of the odd one out
 	w := make([]int, len(p.Tower))
 	different := 0
+	subWeight := 0
 	for i, sp := range p.Tower {
 		w[i] = balance(pl, sp)
 		if w[i] != w[0] {
 			different = i
 		}
+		subWeight += w[i]
 	}
 
+	difference := 0
 	// If the odd one out is still 0, they are all the same
 	if different != 0 {
 		// If not, make sure we found the odd one out
@@ -92,9 +95,9 @@ func balance(pl ProgramList, name string) int {
 
 		// Find the difference, and subtract it from the offending node's
 		// personal weight to see what it should weigh
-		difference := w[different] - goodWeight
+		difference = w[different] - goodWeight
 		fmt.Println(-difference + pl[p.Tower[different]].Weight)
 	}
 
-	return w[0]*len(w) + p.Weight
+	return subWeight + p.Weight - difference
 }
