@@ -1,0 +1,8 @@
+01 Captcha: get a string of digits, process in some way
+02 Checksums: function on a list of numbers
+03 Spiral maze: lay out numbers in a grid
+04 Passwords: uniqueness in lists of words
+05 Jump maze: process a list of jump instructions
+06 Balancing: balance a list of numbers
+07 Disk balance: make a tree and balance subtrees
+08 Assembunny returns: register operations
