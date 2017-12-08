@@ -1,38 +1,31 @@
 package main
 
-import (
-	"fmt"
-)
+import "fmt"
 
-const (
-	MinInt32 = -1 << 31
-)
+const MinInt32 = -1 << 31
 
 type Registry map[string]int
 
 func main() {
-	// Get the input
-
 	reg := make(Registry)
 	record := MinInt32
 	for {
 		r, ins, amt, cr, cond, co := "", "", 0, "", "", 0
-		_, err := fmt.Scanf("%s %s %d if %s %s %d\n",
-			&r, &ins, &amt, &cr, &cond, &co)
-		if err != nil {
+		if _, err := fmt.Scanf("%s %s %d if %s %s %d\n",
+			&r, &ins, &amt, &cr, &cond, &co); err != nil {
 			break
 		}
-		program(reg, r, ins, amt, cr, cond, co)
-		if record < largest(reg) {
-			record = largest(reg)
+		reg.program(r, ins, amt, cr, cond, co)
+		if max := reg.largest(); record < max {
+			record = max
 		}
 	}
 
-	fmt.Println(largest(reg))
+	fmt.Println(reg.largest())
 	fmt.Println(record)
 }
 
-func program(reg Registry, r string, ins string, amt int, cr string, cond string, co int) {
+func (reg Registry) program(r string, ins string, amt int, cr string, cond string, co int) {
 	// See if we should do anything
 	var result bool
 	switch cond {
@@ -61,9 +54,9 @@ func program(reg Registry, r string, ins string, amt int, cr string, cond string
 	}
 }
 
-func largest(r Registry) int {
+func (reg Registry) largest() int {
 	max := MinInt32
-	for _, val := range r {
+	for _, val := range reg {
 		if val > max {
 			max = val
 		}
