@@ -10,9 +10,8 @@ func main() {
 	r := bufio.NewReader(os.Stdin)
 	score, depth, garbage, removed := 0, 0, false, 0
 	for {
-		var b byte
-		var err error
-		if b, err = r.ReadByte(); err != nil {
+		b, err := r.ReadByte()
+		if err != nil {
 			break
 		}
 		if !garbage {
