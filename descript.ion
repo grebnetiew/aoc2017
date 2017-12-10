@@ -6,3 +6,5 @@
 06 Balancing: balance a list of numbers
 07 Disk balance: make a tree and balance subtrees
 08 Assembunny returns: register operations
+09 Garbage stream: parse delimiters and escapes
+10 Knot Hash: reverse parts of a circular list
