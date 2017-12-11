@@ -1,10 +1,5 @@
 l = ReadList[NotebookDirectory[]<>"puzzle05.in", Number];
-it = 0; cursor = 1;
-While[1 <= cursor <= Length[l],
-  l[[cursor]]++;
-  cursor += l[[cursor]] - 1;
-  it++;
-];
+For[it = 0; cursor = 1, 1 <= cursor <= Length[l], cursor += l[[cursor]]++, it++];
 it
 
 
