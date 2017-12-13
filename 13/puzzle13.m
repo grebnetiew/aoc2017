@@ -7,7 +7,7 @@ ranges = input(2, :);
 total_depth = depths(length(depths));
 severities = depths .* ranges;
 delay = 0;
-while sum(mod(delay + depths, 2 * ranges - 2) == 0) > 0
+while ~all(mod(delay + depths, 2 * ranges - 2))
   delay = delay + 1;
 end;
 disp(delay);
