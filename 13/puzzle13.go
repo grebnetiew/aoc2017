@@ -3,20 +3,21 @@ package main
 import "fmt"
 
 func main() {
-	firewall := make(map[int]int)
+	var depths, lengths []int
 	for {
 		var depth, length int
 		if _, err := fmt.Scanf("%d: %d\n", &depth, &length); err != nil {
 			break
 		}
-		firewall[depth] = length
+		depths = append(depths, depth)
+		lengths = append(lengths, length)
 	}
 
-	fmt.Println(getSeverity(firewall, 0))
+	fmt.Println(getSeverity(depths, lengths))
 
 	wait := 1
 	for {
-		if _, c := getSeverity(firewall, wait); !c {
+		if !getCaught(depths, lengths, wait) {
 			break
 		}
 		wait++
@@ -24,19 +25,27 @@ func main() {
 	fmt.Println(wait)
 }
 
-func getSeverity(fw map[int]int, wait int) (int, bool) {
+func getSeverity(depths, lengths []int) int {
 	score := 0
-	caught := false
-	for depth, length := range fw {
-		cycleLength := length*2 - 2
+	for i := range depths {
+		cycleLength := lengths[i]*2 - 2
 		if cycleLength == 0 {
 			cycleLength = 1
 		}
-		if (depth+wait)%cycleLength == 0 {
+		if depths[i]%cycleLength == 0 {
 			// get caught!
-			score += depth * length
-			caught = true
+			score += depths[i] * lengths[i]
 		}
 	}
-	return score, caught
+	return score
+}
+
+func getCaught(depths, lengths []int, wait int) bool {
+	for i := range depths {
+		if (depths[i]+wait)%(lengths[i]*2-2) == 0 {
+			// get caught!
+			return true
+		}
+	}
+	return false
 }
