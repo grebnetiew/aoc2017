@@ -13,22 +13,14 @@ func main() {
 	line := dance([]byte("abcdefghijklmnop"), input)
 	fmt.Println(string(line))
 
-	fmt.Println(string(dance(dance([]byte("abcdefghijklmnop"), input), input)))
-	fmt.Println(string(dancecheat(dancecheat([]byte("abcdefghijklmnop"), input), input)))
+	var i int
+	for i = 1; !isIdentity(line); i++ {
+		line = dance(line, input)
+	}
+	fmt.Println("Cycle length is", i)
 
-	perm := dancecheat([]byte("abcdefghijklmnop"), input)
-	//these two should be equal
-	fmt.Println(string(perm))
-	fmt.Println(string(permutation([]byte("abcdefghijklmnop"), perm)))
-
-	fmt.Println(string(dance(line, input)))
-	fmt.Println(string(permutation(perm, perm)))
-
-	for i := 0; i < 1000000000-1; i++ {
-		line = permutation(line, perm)
-		if i%10000000 == 0 {
-			fmt.Printf("%d percent\n", i/10000000)
-		}
+	for j := 0; j < 1000000000%i; j++ {
+		line = dance(line, input)
 	}
 	fmt.Println(string(line))
 }
@@ -61,29 +53,11 @@ func dance(line []byte, input []string) []byte {
 	return line
 }
 
-func dancecheat(line []byte, input []string) []byte {
-	for _, command := range input {
-		switch command[0] {
-		case 's':
-			var amount int
-			fmt.Sscanf(command, "s%d", &amount)
-			line = append(line[len(line)-amount:], line[:len(line)-amount]...)
-		case 'x':
-			var a, b int
-			fmt.Sscanf(command, "x%d/%d", &a, &b)
-			tmp := line[a]
-			line[a] = line[b]
-			line[b] = tmp
+func isIdentity(line []byte) bool {
+	for i, v := range line {
+		if int(v-'a') != i {
+			return false
 		}
 	}
-	return line
-}
-
-func permutation(line, perm []byte) []byte {
-	newline := make([]byte, len(line))
-	for i, v := range perm {
-		j := v - byte('a')
-		newline[i] = line[j]
-	}
-	return newline
+	return true
 }
