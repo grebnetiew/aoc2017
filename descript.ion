@@ -14,3 +14,4 @@
 14 Defragment: find contiguous regions in a boolean matrix
 15 Generators: simple modulo calculations
 16 Dancing: apply a cyclic permutation a billion times
+17 Spinlock: circular buffer, insert many times
