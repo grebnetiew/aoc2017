@@ -16,3 +16,4 @@
 16 Dancing: apply a cyclic permutation a billion times
 17 Spinlock: circular buffer, insert many times
 18 Duet: Two concurrent assembunnies sending stuff to one another
+19 Tubes: a text maze
