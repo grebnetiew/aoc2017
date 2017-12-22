@@ -17,3 +17,5 @@
 17 Spinlock: circular buffer, insert many times
 18 Duet: Two concurrent assembunnies sending stuff to one another
 19 Tubes: a text maze
+21 Fractal: an expanding image
+20 Particles: simulate movement of particles
