@@ -23,57 +23,45 @@ func main() {
 	}
 	sort.Slice(parts, func(i, j int) bool { return parts[i][0] < parts[j][0] })
 
-	fmt.Println(strongest(parts, 0, make([]bool, len(parts))))
-	fmt.Println(longest(parts, 0, make([]bool, len(parts))))
+	strongest, _, _ := findBest(parts, 0, make([]bool, len(parts)), stronger)
+	fmt.Println(strongest)
+
+	strongest, length, _ := findBest(parts, 0, make([]bool, len(parts)), longer)
+	fmt.Printf("%d (%d)\n", strongest, length)
 }
 
-func strongest(parts []Part, start int, visited []bool) (int, []Part) {
-	best := 0
-	var bestchain []Part
+type fBetter func(length, weight, bestlength, bestweight int) bool
+
+func findBest(parts []Part, start int, visited []bool, compare fBetter) (bestweight int, bestlength int, bestchain []Part) {
 	for i, p := range parts {
-		if !visited[i] && (p[0] == start || p[1] == start) {
-			newstart := p[1]
-			if p[1] == start {
-				newstart = p[0]
-			}
-			newvisited := append([]bool(nil), visited...)
-			newvisited[i] = true
-			w, chain := strongest(parts, newstart, newvisited)
-			if w+p[0]+p[1] > best {
-				best = w + p[0] + p[1]
-				bestchain = append([]Part{p}, chain...)
-			}
+		// Skip this part if it's used or doesn't fit
+		if visited[i] || (p[0] != start && p[1] != start) {
+			continue
 		}
+		// Determine the 'open' end of this candidate part
+		newstart := p[1]
+		if p[1] == start {
+			newstart = p[0]
+		}
+		// Add the candidate part to the list of visited parts
+		visited[i] = true
+		// Find the best results if starting from this candidate
+		w, l, chain := findBest(parts, newstart, visited, compare)
+		// If better, keep it as the new best options
+		if compare(l+1, w+p[0]+p[1], bestlength, bestweight) {
+			bestweight = w + p[0] + p[1]
+			bestlength = l + 1
+			bestchain = append([]Part{p}, chain...)
+		}
+		// "unreserve" the candidate node
+		visited[i] = false
 	}
-	return best, bestchain
+	return bestweight, bestlength, bestchain
 }
 
-func longest(parts []Part, start int, visited []bool) (weight int, length int, _ []Part) {
-	best := 0
-	maxlength := 0
-	var bestchain []Part
-	for i, p := range parts {
-		if !visited[i] && (p[0] == start || p[1] == start) {
-			newstart := p[1]
-			if p[1] == start {
-				newstart = p[0]
-			}
-			newvisited := append([]bool(nil), visited...)
-			newvisited[i] = true
-			w, l, chain := longest(parts, newstart, newvisited)
-			if l > maxlength || (l == maxlength && w+p[0]+p[1] > best) {
-				best = w + p[0] + p[1]
-				maxlength = l
-				bestchain = append([]Part{p}, chain...)
-			}
-		}
-	}
-	return best, maxlength + 1, bestchain
+func stronger(length, weight, bestlength, bestweight int) bool {
+	return weight > bestweight
 }
-
-func print(p []Part) {
-	for _, v := range p {
-		fmt.Printf("%d/%d--", v[0], v[1])
-	}
-	fmt.Println()
+func longer(length, weight, bestlength, bestweight int) bool {
+	return length > bestlength || (length == bestlength && weight > bestweight)
 }
