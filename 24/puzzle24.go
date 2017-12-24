@@ -16,42 +16,41 @@ func main() {
 		parts = append(parts, [2]int{p, q})
 	}
 
-	strength, _ := findBest(&parts, 0, nil, stronger)
+	strength, _ := FindBest(&parts, stronger)
 	fmt.Println(strength)
 
-	strength, length := findBest(&parts, 0, nil, longer)
+	strength, length := FindBest(&parts, longer)
 	fmt.Printf("%d (%d)\n", strength, length)
 }
 
-func findBest(parts *[]Part, start int, visited *[]bool, cmp ComparisonFunction) (bestweight, bestlength int) {
-	// Make a list of visited nodes, if this is a top level invocation
-	if visited == nil {
-		v := make([]bool, len(*parts))
-		visited = &v
-	}
+func FindBest(parts *[]Part, cmp ComparisonFunction) (bestweight, bestlength int) {
+	return findBest(parts, cmp, 0, make([]bool, len(*parts)))
+}
 
-	// Try to connect each part and recurse
+func findBest(parts *[]Part, cmp ComparisonFunction, start int, visited []bool) (bestweight, bestlength int) {
 	for i, p := range *parts {
-		// Skip this part if it's used or doesn't fit
-		if (*visited)[i] || (p[0] != start && p[1] != start) {
-			continue
-		}
-		// Determine the 'open' end of this candidate part
-		newstart := p[1]
-		if p[1] == start {
+		var newstart int
+		switch {
+		case visited[i]:
+			continue // Skip this part if already used
+		case p[0] == start:
+			newstart = p[1]
+		case p[1] == start:
 			newstart = p[0]
+		default:
+			continue // Skip this part if it doesn't fit
 		}
 		// Add the candidate part to the list of visited parts
-		(*visited)[i] = true
+		visited[i] = true
 		// Find the best results if starting from this candidate
-		w, l := findBest(parts, newstart, visited, cmp)
+		w, l := findBest(parts, cmp, newstart, visited)
 		// If better, keep it as the new best options
 		if cmp(l+1, w+p[0]+p[1], bestlength, bestweight) {
 			bestweight = w + p[0] + p[1]
 			bestlength = l + 1
 		}
 		// "unreserve" the candidate node
-		(*visited)[i] = false
+		visited[i] = false
 	}
 	return bestweight, bestlength
 }
